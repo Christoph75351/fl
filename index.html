@@ -745,30 +745,56 @@ async function handleLogin() {
     let password = document.getElementById("password").value;
 
     try {
-        let response = await fetch("users.json"); // 从 GitHub 读取账号密码
-        let users = await response.json();
+        let response = await fetch("users.json"); // ✅ 读取 GitHub 存储的用户信息
+        if (!response.ok) {
+            throw new Error("❌ 服务器无法访问用户数据！");
+        }
 
+        let users = await response.json();
         let user = users.find(u => u.username === username && u.password === password);
+
         if (user) {
-            localStorage.setItem("isLoggedIn", "true"); // 存储登录状态
-            document.getElementById("loginContainer").style.display = "none"; // 隐藏登录界面
-            document.body.style.overflow = "auto"; // 允许滚动
+            localStorage.setItem("isLoggedIn", "true"); // ✅ 记住登录状态
+            document.getElementById("loginContainer").style.display = "none"; // ✅ 隐藏登录界面
+            document.body.style.overflow = "auto"; // ✅ 允许滚动
+
+            console.log("✅ 登录成功，进入网站");
         } else {
-            document.getElementById("loginError").style.display = "block"; // 显示错误信息
+            document.getElementById("loginError").style.display = "block"; // ✅ 显示错误提示
+            console.log("❌ 账号或密码错误");
         }
     } catch (error) {
-        console.error("❌ 无法加载用户数据", error);
+        console.error("❌ 无法加载用户数据：", error);
+        document.getElementById("loginError").innerText = "⚠️ 服务器错误，无法验证账号！";
+        document.getElementById("loginError").style.display = "block";
     }
 }
 
-// ✅ 检查是否已登录
-document.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("isLoggedIn") === "true") {
-        document.getElementById("loginContainer").style.display = "none";
-        document.body.style.overflow = "auto"; // 允许滚动
-    } else {
-        document.getElementById("loginContainer").style.display = "flex";
-        document.body.style.overflow = "hidden"; // 禁止滚动，防止绕过登录
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        let response = await fetch("users.json");
+        if (!response.ok) {
+            throw new Error("❌ 服务器无法加载用户数据");
+        }
+
+        let users = await response.json();
+        if (!Array.isArray(users) || users.length === 0) {
+            throw new Error("❌ 用户数据格式错误！");
+        }
+
+        if (localStorage.getItem("isLoggedIn") === "true") {
+            document.getElementById("loginContainer").style.display = "none"; // ✅ 已登录，直接进入
+            document.body.style.overflow = "auto"; // ✅ 允许滚动
+            console.log("🔓 已登录，直接进入网站");
+        } else {
+            document.getElementById("loginContainer").style.display = "flex"; // ✅ 显示登录界面
+            document.body.style.overflow = "hidden"; // ✅ 禁止滚动
+        }
+    } catch (error) {
+        console.error(error);
+        document.getElementById("loginError").innerText = "⚠️ 无法加载用户数据，请稍后再试！";
+        document.getElementById("loginError").style.display = "block";
     }
 });
 
