@@ -759,7 +759,8 @@ async function handleLogin() {
             console.log("✅ 登录成功！");
             localStorage.setItem("isLoggedIn", "true"); // ✅ 记住登录状态
             document.getElementById("loginContainer").style.display = "none"; // ✅ 隐藏登录界面
-            document.body.style.overflow = "auto"; // ✅ 允许滚动
+            document.getElementById("contentContainer").style.display = "block"; // ✅ 现在可以看内容
+            document.body.style.overflow = "auto";
         } else {
             console.log("❌ 账号或密码错误");
             document.getElementById("loginError").innerText = "❌ 账号或密码错误！";
@@ -775,22 +776,24 @@ async function handleLogin() {
 
 
 
+
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("📌 页面已加载，检查登录状态...");
 
-    // ✅ 如果 `localStorage` 里存了 "true"，才允许访问网站
+    // ✅ 如果 localStorage 里存了 "true"，显示网站内容
     if (localStorage.getItem("isLoggedIn") === "true") {
-        console.log("🔓 已登录，直接进入网站");
+        console.log("🔓 已登录，显示网站内容");
         document.getElementById("loginContainer").style.display = "none";
-        document.body.style.overflow = "auto"; // 允许滚动
-        return; // ⛔ 终止后续代码
+        document.getElementById("contentContainer").style.display = "block"; // ✅ 现在可以看内容
+        document.body.style.overflow = "auto";
+        return;
     }
 
     // ❗❗ 强制让未登录用户留在登录界面
     document.getElementById("loginContainer").style.display = "flex";
-    document.body.style.overflow = "hidden"; // 禁止滚动
+    document.getElementById("contentContainer").style.display = "none"; // ❌ 网站内容不显示
+    document.body.style.overflow = "hidden"; // ✅ 禁止滚动，防止绕过登录
 });
-
 
 function logout() {
     localStorage.removeItem("isLoggedIn"); // ✅ 清除登录状态
@@ -837,6 +840,10 @@ function logout() {
     <div id="tag-menu-list"></div> <!-- ✅ 确保 ID 匹配 -->
 </div>
 
+<button onclick="logout()" style="position:fixed; top:10px; right:10px; padding:5px 10px; background:red; color:white; border:none; border-radius:5px; cursor:pointer;">
+    退出登录
+</button>
+
 
 <!-- 📌 底部浮动广告 -->
 <div id="floatingAd" style="
@@ -865,8 +872,6 @@ function logout() {
         cursor: pointer;
     ">关闭</button>
 </div>
-
-</body>
 </html>
     </div>
 </body>
