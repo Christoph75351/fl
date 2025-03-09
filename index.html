@@ -219,6 +219,10 @@ video {
     cursor: pointer;
 }
 
+<button onclick="logout()" style="position:fixed; top:10px; right:10px; padding:5px 10px; background:red; color:white; border:none; border-radius:5px; cursor:pointer;">
+    退出登录
+</button>
+
 
     </style>
 </head>
@@ -741,13 +745,13 @@ function playVideo(video) {
 
 
 async function handleLogin() {
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
+    let username = document.getElementById("username").value.trim();
+    let password = document.getElementById("password").value.trim();
 
     try {
         let response = await fetch("fl/users.json"); // ✅ 确保路径正确
         if (!response.ok) {
-            throw new Error("❌ 服务器无法访问用户数据！");
+            throw new Error("❌ 无法访问用户数据");
         }
 
         let users = await response.json();
@@ -760,7 +764,7 @@ async function handleLogin() {
             document.body.style.overflow = "auto"; // ✅ 允许滚动
         } else {
             console.log("❌ 账号或密码错误");
-            document.getElementById("loginError").innerText = "账号或密码错误！";
+            document.getElementById("loginError").innerText = "❌ 账号或密码错误！";
             document.getElementById("loginError").style.display = "block"; // ✅ 显示错误提示
         }
     } catch (error) {
@@ -772,10 +776,11 @@ async function handleLogin() {
 
 
 
+
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("📌 页面已加载，检查登录状态...");
 
-    // ✅ 如果 localStorage 里存了 "true"，直接进入网站
+    // ✅ 如果 `localStorage` 里存了 "true"，才允许访问网站
     if (localStorage.getItem("isLoggedIn") === "true") {
         console.log("🔓 已登录，直接进入网站");
         document.getElementById("loginContainer").style.display = "none";
@@ -783,29 +788,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         return; // ⛔ 终止后续代码
     }
 
-    try {
-        let response = await fetch("fl/users.json"); // ✅ 确保路径正确
-        if (!response.ok) {
-            throw new Error("❌ 服务器无法加载用户数据");
-        }
-
-        let users = await response.json();
-        if (!Array.isArray(users) || users.length === 0) {
-            throw new Error("❌ 用户数据格式错误！");
-        }
-
-        // ✅ 只在未登录时显示登录界面
-        console.log("🔒 未登录，显示登录界面");
-        document.getElementById("loginContainer").style.display = "flex";
-        document.body.style.overflow = "hidden"; // 禁止滚动，防止绕过登录
-
-    } catch (error) {
-        console.error(error);
-        document.getElementById("loginError").innerText = "⚠️ 无法加载用户数据，请稍后再试！";
-        document.getElementById("loginError").style.display = "block";
-    }
+    // ❗❗ 强制让未登录用户留在登录界面
+    document.getElementById("loginContainer").style.display = "flex";
+    document.body.style.overflow = "hidden"; // 禁止滚动
 });
 
+
+function logout() {
+    localStorage.removeItem("isLoggedIn"); // ✅ 清除登录状态
+    location.reload(); // ✅ 刷新页面，返回登录界面
+}
 
 
 
@@ -846,7 +838,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     <p>当前选中：<span id="selectedTag">全部</span></p> <!-- ✅ 显示当前选中的标签 -->
     <div id="tag-menu-list"></div> <!-- ✅ 确保 ID 匹配 -->
 </div>
-
 
 
 <!-- 📌 底部浮动广告 -->
