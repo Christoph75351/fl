@@ -754,14 +754,14 @@ async function handleLogin() {
         let user = users.find(u => u.username === username && u.password === password);
 
         if (user) {
+            console.log("✅ 登录成功！");
             localStorage.setItem("isLoggedIn", "true"); // ✅ 记住登录状态
             document.getElementById("loginContainer").style.display = "none"; // ✅ 隐藏登录界面
             document.body.style.overflow = "auto"; // ✅ 允许滚动
-
-            console.log("✅ 登录成功，进入网站");
         } else {
-            document.getElementById("loginError").style.display = "block"; // ✅ 显示错误提示
             console.log("❌ 账号或密码错误");
+            document.getElementById("loginError").innerText = "账号或密码错误！";
+            document.getElementById("loginError").style.display = "block"; // ✅ 显示错误提示
         }
     } catch (error) {
         console.error("❌ 无法加载用户数据：", error);
@@ -773,12 +773,14 @@ async function handleLogin() {
 
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // ✅ 先检查 localStorage 是否已有登录信息
+    console.log("📌 页面已加载，检查登录状态...");
+
+    // ✅ 如果 localStorage 里存了 "true"，直接进入网站
     if (localStorage.getItem("isLoggedIn") === "true") {
-        document.getElementById("loginContainer").style.display = "none"; // ✅ 隐藏登录界面
-        document.body.style.overflow = "auto"; // ✅ 允许滚动
         console.log("🔓 已登录，直接进入网站");
-        return; // ✅ 终止后续代码
+        document.getElementById("loginContainer").style.display = "none";
+        document.body.style.overflow = "auto"; // 允许滚动
+        return; // ⛔ 终止后续代码
     }
 
     try {
@@ -792,9 +794,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             throw new Error("❌ 用户数据格式错误！");
         }
 
-        // ✅ 强制显示登录界面，防止未登录用户直接访问
-        document.getElementById("loginContainer").style.display = "flex"; 
-        document.body.style.overflow = "hidden"; // ✅ 禁止滚动，防止绕过登录
+        // ✅ 只在未登录时显示登录界面
+        console.log("🔒 未登录，显示登录界面");
+        document.getElementById("loginContainer").style.display = "flex";
+        document.body.style.overflow = "hidden"; // 禁止滚动，防止绕过登录
 
     } catch (error) {
         console.error(error);
