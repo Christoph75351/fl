@@ -745,7 +745,7 @@ async function handleLogin() {
     let password = document.getElementById("password").value;
 
     try {
-        let response = await fetch("users.json"); // ✅ 读取 GitHub 存储的用户信息
+        let response = await fetch("fl/users.json"); // ✅ 确保路径正确
         if (!response.ok) {
             throw new Error("❌ 服务器无法访问用户数据！");
         }
@@ -771,9 +771,18 @@ async function handleLogin() {
 }
 
 
+
 document.addEventListener("DOMContentLoaded", async () => {
+    // ✅ 先检查 localStorage 是否已有登录信息
+    if (localStorage.getItem("isLoggedIn") === "true") {
+        document.getElementById("loginContainer").style.display = "none"; // ✅ 隐藏登录界面
+        document.body.style.overflow = "auto"; // ✅ 允许滚动
+        console.log("🔓 已登录，直接进入网站");
+        return; // ✅ 终止后续代码
+    }
+
     try {
-        let response = await fetch("users.json");
+        let response = await fetch("fl/users.json"); // ✅ 确保路径正确
         if (!response.ok) {
             throw new Error("❌ 服务器无法加载用户数据");
         }
@@ -783,20 +792,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             throw new Error("❌ 用户数据格式错误！");
         }
 
-        if (localStorage.getItem("isLoggedIn") === "true") {
-            document.getElementById("loginContainer").style.display = "none"; // ✅ 已登录，直接进入
-            document.body.style.overflow = "auto"; // ✅ 允许滚动
-            console.log("🔓 已登录，直接进入网站");
-        } else {
-            document.getElementById("loginContainer").style.display = "flex"; // ✅ 显示登录界面
-            document.body.style.overflow = "hidden"; // ✅ 禁止滚动
-        }
+        // ✅ 强制显示登录界面，防止未登录用户直接访问
+        document.getElementById("loginContainer").style.display = "flex"; 
+        document.body.style.overflow = "hidden"; // ✅ 禁止滚动，防止绕过登录
+
     } catch (error) {
         console.error(error);
         document.getElementById("loginError").innerText = "⚠️ 无法加载用户数据，请稍后再试！";
         document.getElementById("loginError").style.display = "block";
     }
 });
+
 
 
 
