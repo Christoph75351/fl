@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>情欲之路TikTok</title>
     
+
+<div id="loginContainer" class="login-container">
+    <h2>登录</h2>
+    <input type="text" id="username" placeholder="账号">
+    <input type="password" id="password" placeholder="密码">
+    <button onclick="handleLogin()">登录</button>
+    <p id="loginError" style="color: red; display: none;">账号或密码错误</p>
+</div>
+
+
+
+
+
      <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <style>
@@ -174,6 +187,37 @@ video {
     display: none;
 }
 
+.login-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.login-container input {
+    width: 200px;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 5px;
+}
+
+.login-container button {
+    padding: 10px;
+    background: #ff4b2b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
 
     </style>
@@ -694,6 +738,39 @@ function playVideo(video) {
     document.getElementById("video-category").textContent = video.type_name;
 }
 
+
+
+async function handleLogin() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+
+    try {
+        let response = await fetch("users.json"); // 从 GitHub 读取账号密码
+        let users = await response.json();
+
+        let user = users.find(u => u.username === username && u.password === password);
+        if (user) {
+            localStorage.setItem("isLoggedIn", "true"); // 存储登录状态
+            document.getElementById("loginContainer").style.display = "none"; // 隐藏登录界面
+            document.body.style.overflow = "auto"; // 允许滚动
+        } else {
+            document.getElementById("loginError").style.display = "block"; // 显示错误信息
+        }
+    } catch (error) {
+        console.error("❌ 无法加载用户数据", error);
+    }
+}
+
+// ✅ 检查是否已登录
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("isLoggedIn") === "true") {
+        document.getElementById("loginContainer").style.display = "none";
+        document.body.style.overflow = "auto"; // 允许滚动
+    } else {
+        document.getElementById("loginContainer").style.display = "flex";
+        document.body.style.overflow = "hidden"; // 禁止滚动，防止绕过登录
+    }
+});
 
 
 
