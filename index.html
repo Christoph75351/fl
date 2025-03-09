@@ -216,6 +216,24 @@ video {
     border-radius: 5px;
     cursor: pointer;
 }
+#logoutBtn {
+    position: fixed;
+    top: 10px;
+    left: 10px;  /* ✅ 调整到左上角 */
+    padding: 8px 12px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    z-index: 9999; /* ✅ 确保按钮始终在最上层 */
+}
+
+#logoutBtn:hover {
+    background: darkred;
+}
+
 /* 登录结束 */
         
     </style>
@@ -797,7 +815,6 @@ function logout() {
 }
 
 
-
 </script>
 
 <div id="bottomBar" class="bottom-bar">
@@ -835,6 +852,8 @@ function logout() {
     <p>当前选中：<span id="selectedTag">全部</span></p> <!-- ✅ 显示当前选中的标签 -->
     <div id="tag-menu-list"></div> <!-- ✅ 确保 ID 匹配 -->
 </div>
+
+ <button id="logoutBtn" onclick="logout()">退出登录</button>
 
 <button onclick="logout()" style="position:fixed; top:10px; right:10px; padding:5px 10px; background:red; color:white; border:none; border-radius:5px; cursor:pointer;">
     退出登录
